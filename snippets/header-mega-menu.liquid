@@ -1,15 +1,14 @@
 {% comment %}
-  Renders a megamenu for the header.
-
-  Usage:
-  {% render 'header-mega-menu' %}
+  可配置的巨型菜单组件
+  用法: {% render 'header-mega-menu' %}
 {% endcomment %}
+
 
 <nav class="header__inline-menu">
   <ul class="list-menu list-menu--inline" role="list">
     {%- for link in section.settings.menu.links -%}
-      <li>
-        {%- if link.links != blank -%}
+      <li class="{% if link.title == 'Catalog' %}has-menu{% endif %}">
+        {%- if link.title == 'Catalog' -%}
           <header-menu>
             <details id="Details-HeaderMenu-{{ forloop.index }}" class="mega-menu">
               <summary
@@ -23,54 +22,107 @@
                 >
                   {{- link.title | escape -}}
                 </span>
-                {{- 'icon-caret.svg' | inline_asset_content -}}
+                <svg
+                  class="icon icon-caret"
+                  width="10"
+                  height="6"
+                  viewBox="0 0 10 6"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M9.354.646a.5.5 0 00-.708 0L5 4.293 1.354.646a.5.5 0 00-.708.708l4 4a.5.5 0 00.708 0l4-4a.5.5 0 000-.708z" fill="currentColor"/>
+                </svg>
               </summary>
               <div
                 id="MegaMenu-Content-{{ forloop.index }}"
                 class="mega-menu__content color-{{ section.settings.menu_color_scheme }} gradient motion-reduce global-settings-popup"
                 tabindex="-1"
               >
-                <ul
-                  class="mega-menu__list page-width{% if link.levels == 1 %} mega-menu__list--condensed{% endif %}"
-                  role="list"
-                >
-                  {%- for childlink in link.links -%}
-                    <li>
-                      <a
-                        id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
-                        href="{{ childlink.url }}"
-                        class="mega-menu__link mega-menu__link--level-2 link{% if childlink.current %} mega-menu__link--active{% endif %}"
-                        {% if childlink.current %}
-                          aria-current="page"
+                <div class="mega-menu__content-inner">
+                  <!-- 左侧产品分类区域 -->
+                  <div class="product-grid-container">
+                    <div class="product-grid">
+                      {% for block in section.blocks %}
+                        {% if block.type == 'product_category' %}
+                          <div class="product-category">
+                            <div class="category-icon">
+                              {% if block.settings.category_icon != blank %}
+                                <img
+                                  src="{{ block.settings.category_icon | image_url: width:80,height:80, crop: 'center' }}"
+                                  alt="{{ block.settings.category_name }}"
+                                  class="category-image"
+                                  width="80"
+                                  height="80"
+                                >
+                              {% else %}
+                                {{ block.settings.category_name | truncate: 2, '' }}
+                              {% endif %}
+                            </div>
+                            <a href="{{ block.settings.category_link }}" class="category-name">
+                              {{ block.settings.category_name }}
+                            </a>
+                          </div>
                         {% endif %}
-                      >
-                        {{ childlink.title | escape }}
-                      </a>
-                      {%- if childlink.links != blank -%}
-                        <ul class="list-unstyled" role="list">
-                          {%- for grandchildlink in childlink.links -%}
-                            <li>
-                              <a
-                                id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
-                                href="{{ grandchildlink.url }}"
-                                class="mega-menu__link link{% if grandchildlink.current %} mega-menu__link--active{% endif %}"
-                                {% if grandchildlink.current %}
-                                  aria-current="page"
-                                {% endif %}
-                              >
-                                {{ grandchildlink.title | escape }}
-                              </a>
-                            </li>
-                          {%- endfor -%}
-                        </ul>
-                      {%- endif -%}
-                    </li>
-                  {%- endfor -%}
-                </ul>
+                      {% endfor %}
+                    </div>
+                  </div>
+
+                  <!-- 右侧特殊区域 -->
+                  <div class="special-area">
+                    <!-- NEW ARRIVALS 部分 -->
+                    <div class="new-arrivals">
+                      {% assign new_arrivals_block = blank %}
+                      {% for block in section.blocks %}
+                        {% if block.type == 'new_arrivals' and block.settings.enabled %}
+                          {% assign new_arrivals_block = block %}
+                          {% break %}
+                        {% endif %}
+                      {% endfor %}
+
+                      <h3>
+                        {% if new_arrivals_block != blank and new_arrivals_block.settings.title != blank %}
+                          {{ new_arrivals_block.settings.title }}
+                        {% else %}
+                          NEW<br>
+                          ARRIVALS
+                        {% endif %}
+                      </h3>
+
+                      <div class="hug-count">
+                        {% if new_arrivals_block != blank and new_arrivals_block.settings.count != blank %}
+                           <a href="{{ new_arrivals_block.settings.new_link }}" class="category-name">
+                          {{ new_arrivals_block.settings.count }}
+                        </a>
+                        {% else %}
+                          1228 Hug 582 Hug
+                        {% endif %}
+                      </div>
+
+                      {% if new_arrivals_block != blank
+                        and new_arrivals_block.settings.new_arrivals_background != blank
+                      %}
+                        <style>
+                          .new-arrivals {
+                            background-image: url('{{ new_arrivals_block.settings.new_arrivals_background | image_url: width: 1200, height: 800 }}');
+                            background-size: cover;
+                            background-position: center;
+                          }
+                        </style>
+                      {% endif %}
+                    </div>
+
+                    <!-- REFER YOUR FRIENDS 部分 -->
+                    <div class="refer-friends">
+                      <h3>REFER YOUR FRIENDS</h3>
+                      <p>Get exclusive discounts for sharing!</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </details>
           </header-menu>
         {%- else -%}
+          <!-- 普通菜单项 -->
           <a
             id="HeaderMenu-{{ link.handle }}"
             href="{{ link.url }}"
@@ -92,3 +144,80 @@
     {%- endfor -%}
   </ul>
 </nav>
+
+<script>
+  // 添加优化的悬停交互支持
+  document.addEventListener('DOMContentLoaded', function () {
+    const menuItems = document.querySelectorAll('.has-menu');
+
+    menuItems.forEach((item) => {
+      const details = item.querySelector('details');
+      if (!details) return;
+
+      // 鼠标悬停时打开菜单
+      item.addEventListener('mouseenter', function () {
+        details.setAttribute('open', 'open');
+      });
+
+      // 鼠标离开时处理关闭逻辑
+      item.addEventListener('mouseleave', function (e) {
+        // 延迟关闭，避免跳转
+        setTimeout(() => {
+          const isHovering =
+            item.matches(':hover') ||
+            details.contains(document.activeElement) ||
+            details.querySelector('.mega-menu__content').matches(':hover');
+          if (!isHovering) {
+            details.removeAttribute('open');
+          }
+        }, 200);
+      });
+
+      // 处理下拉菜单内部的鼠标事件
+      const dropdown = item.querySelector('.mega-menu__content');
+      if (dropdown) {
+        dropdown.addEventListener('mouseenter', () => {
+          details.setAttribute('open', 'open');
+        });
+
+        dropdown.addEventListener('mouseleave', () => {
+          setTimeout(() => {
+            const isHovering = dropdown.matches(':hover') || item.matches(':hover');
+            if (!isHovering) {
+              details.removeAttribute('open');
+            }
+          }, 100);
+        });
+      }
+    });
+
+    // 处理移动设备点击事件
+    document.querySelectorAll('.has-menu summary').forEach((summary) => {
+      summary.addEventListener('click', (e) => {
+        if (!window.matchMedia('(hover: hover)').matches) {
+          const details = summary.closest('details');
+          const isOpen = details.hasAttribute('open');
+
+          document.querySelectorAll('.mega-menu').forEach((menu) => {
+            if (menu !== details) {
+              menu.removeAttribute('open');
+            }
+          });
+
+          if (!isOpen) {
+            details.setAttribute('open', 'open');
+          }
+        }
+      });
+    });
+
+    // 点击页面其他地方关闭所有菜单
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.mega-menu')) {
+        document.querySelectorAll('.mega-menu').forEach((menu) => {
+          menu.removeAttribute('open');
+        });
+      }
+    });
+  });
+</script>

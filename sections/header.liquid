@@ -1,4 +1,3 @@
-<h2>Hello</h2>
 <link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{{ 'component-search.css' | asset_url }}" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{{ 'component-menu-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
@@ -471,7 +470,7 @@
 {
   "name": "t:sections.header.name",
   "class": "section-header",
-  "max_blocks": 3,
+  "max_blocks": 20,
   "settings": [
     {
       "type": "select",
@@ -648,11 +647,141 @@
       "unit": "px",
       "label": "t:sections.all.padding.padding_bottom",
       "default": 20
+    },
+
+    // +++ 新增下拉菜单设置 +++
+    {
+      "type": "header",
+      "content": "Mega Dropdown Settings"
+    },
+    {
+      "type": "text",
+      "id": "mega_menu_trigger",
+      "label": "Dropdown Trigger Menu Item",
+      "default": "Catalog",
+      "info": "Enter the exact name of the menu item that should trigger the mega dropdown"
+    },
+    {
+      "type": "range",
+      "id": "dropdown_width",
+      "min": 700,
+      "max": 1400,
+      "step": 50,
+      "unit": "px",
+      "label": "Dropdown Container Width",
+      "default": 1200
+    },
+
+    // +++ 推广区块配置 +++
+    {
+      "type": "header",
+      "content": "Promotional Blocks"
+    },
+    {
+      "type": "text",
+      "id": "new_arrivals_title",
+      "label": "New Arrivals Title",
+      "default": "NEW ARRIVALS"
+    },
+    {
+      "type": "text",
+      "id": "hug_count",
+      "label": "Hug Count",
+      "default": "1228 Hug 582 Hug"
+    },
+    {
+      "type": "text",
+      "id": "refer_title",
+      "label": "Refer Friends Title",
+      "default": "REFER YOUR FRIENDS"
+    },
+    {
+      "type": "text",
+      "id": "refer_description",
+      "label": "Refer Friends Description",
+      "default": "Get exclusive discounts for sharing!"
+    },
+    {
+      "type": "color",
+      "id": "promo_bg_color",
+      "label": "Promo Blocks Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "promo_text_color",
+      "label": "Promo Blocks Text Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "promo_accent_color",
+      "label": "Promo Accent Color",
+      "default": "#FF0000"
     }
   ],
   "blocks": [
     {
       "type": "@app"
+    },
+    // +++ 新增产品分类区块 +++
+    {
+      "type": "product_category",
+      "name": "产品分类",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "category_icon",
+          "label": "分类图标"
+        },
+        {
+          "type": "text",
+          "id": "category_name",
+          "label": "分类名称",
+          "default": "分类名称"
+        },
+        {
+          "type": "url",
+          "id": "category_link",
+          "label": "分类链接"
+        }
+      ]
+    },
+    // +++ 新品区块 (单一层级) +++
+    {
+      "type": "new_arrivals",
+      "name": "新品区块",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "enabled",
+          "label": "启用",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "标题",
+          "default": "NEW ARRIVALS"
+        },
+        {
+          "type": "image_picker",
+          "id": "new_arrivals_background",
+          "label": "New Arrivals Background Image"
+        },
+        {
+          "type": "text",
+          "id": "count",
+          "label": "计数文本",
+          "default": "1228 Hug 582 Hug"
+        },
+        {
+          "type": "url",
+          "id": "new_link",
+          "label": "新品链接"
+        }
+      ]
     }
   ]
 }

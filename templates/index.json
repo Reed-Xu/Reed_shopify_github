@@ -1,6 +1,5 @@
 {
-  "layout": "theme.index",
-  "sections": {
+"sections": {
     "image_banner": {
       "type": "image-banner",
       "blocks": {
