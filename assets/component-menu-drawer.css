@@ -241,3 +241,146 @@ details[open].menu-opening > .menu-drawer__submenu {
     transition: none !important;
   }
 }
+
+
+  /* 移动端Catalog菜单样式 */
+  .mobile-catalog-menu {
+    padding: 15px;
+  }
+  
+  .mobile-product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .mobile-product-category {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 15px;
+    background: rgba(0,0,0,0.02);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  
+  .mobile-product-category:hover {
+    background: rgba(0,0,0,0.05);
+    transform: translateY(-3px);
+  }
+  
+  .mobile-category-icon {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  
+  .mobile-category-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+  
+  .mobile-category-placeholder {
+    width: 60px;
+    height: 60px;
+    background: #f0f0f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 20px;
+  }
+  
+  .mobile-category-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    text-decoration: none;
+  }
+  
+  .mobile-special-area {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .mobile-new-arrivals {
+    background: #000;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+  }
+  
+  .mobile-new-arrivals h3 {
+    color: #ff0000;
+    font-size: 18px;
+    margin: 0 0 10px;
+    line-height: 1.2;
+  }
+  
+  .mobile-hug-count {
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 5px 10px;
+    border-radius: 20px;
+    color: #ff0000;
+    display: inline-block;
+  }
+  
+  .mobile-refer-friends {
+    background: #000;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-decoration: none;
+  }
+  
+  .mobile-refer-friends h3 {
+    font-size: 16px;
+    margin: 0 0 5px;
+    color: white;
+  }
+  
+  .mobile-refer-friends p {
+    font-size: 14px;
+    margin: 0;
+    opacity: 0.8;
+  }
+  
+  .mobile-additional-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .mobile-additional-links li {
+    border-top: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  .mobile-additional-links .mobile-menu__item {
+    display: block;
+    padding: 12px 15px;
+    font-size: 16px;
+    color: #333;
+    text-decoration: none;
+  }
+  
+  @media (min-width: 769px) {
+    .mobile-catalog-menu,
+    .mobile-product-grid,
+    .mobile-special-area {
+      display: none;
+    }
+  }
