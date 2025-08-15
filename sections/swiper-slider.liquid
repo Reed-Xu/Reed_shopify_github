@@ -1,0 +1,366 @@
+ {% comment %} <style>
+  .swiper {
+    width: 1000px;
+    height: 500px;
+  }
+</style>
+{{ 'swiper-bundle.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'swiper-bundle.js' | asset_url }}" defer></script>  
+<div class="swiper">
+  <div class="swiper-wrapper">
+      {% for block in section.blocks %}
+        {% if block.type == 'slide' %}
+          <div class="swiper-slide">
+            <div class="swiper-category-icon">
+              {% if block.settings.swiper_image != blank %}
+                <img
+                  src="{{ block.settings.swiper_image | image_url: width:80,height:80, crop: 'center' }}"
+                  alt="{{ block.settings.swiper_title }}"
+                  class="swiper-category-image"
+                  width="80"
+                  height="80"
+                >
+              {% else %}
+                {{ block.settings.swiper_title | truncate: 2, '' }}
+              {% endif %}
+            </div>
+            <a href="{{ block.settings.link }}" class="category-name">
+              {{ block.settings.swiper_title }}
+            </a>
+            <div class="swiper-grid-description">
+              {{ block.settings.description }}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+  </div>
+  <div class="swiper-pagination"></div>
+  <div class="swiper-button-prev"></div>
+  <div class="swiper-button-next"></div>
+  <div class="swiper-scrollbar"></div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var mySwiper = new Swiper('.swiper', {
+      slidesPerView: 4,
+      loop: true,
+      autoplay: {
+        delay: 3000,
+        disableOnInteraction: false,
+      },
+      pagination: {
+        el: '.swiper-pagination',
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      scrollbar: {
+        el: '.swiper-scrollbar',
+      },
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "🔄 Swiper Slider", // 添加图标更直观
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "轮播标题",
+      "default": "精选推荐"
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "自动轮播速度(秒)",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pagination",
+      "label": "显示分页指示器",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "显示导航箭头",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide", // 更符合轮播图语义
+      "name": "轮播幻灯片",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "swiper_image",
+          "label": "幻灯片图片",
+          "info": "建议尺寸：1200x600px"
+        },
+        {
+          "type": "text",
+          "id": "swiper_title",
+          "label": "幻灯片标题",
+          "default": "新品上市"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "描述文字",
+          "default": "<p>点击了解更多详情</p>"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "链接地址",
+          "info": "点击幻灯片跳转链接"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "🔄 默认轮播配置",
+      "category": "媒体"
+    }
+  ]
+}
+{% endschema %}  {% endcomment %}
+
+
+{{ 'swiper-bundle.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'swiper-bundle.js' | asset_url }}" defer></script>  
+
+<div class="swiper-section">
+  <div class="swiper-header">
+    <h1 class="swiper-title">Top Picks For You</h1>
+  </div>
+
+  <div class="swiper-container">
+    <div class="swiper">
+      <div class="swiper-wrapper">
+        {% for block in section.blocks %}
+          {% if block.type == 'slide' %}
+            <div class="swiper-slide">
+              <div class="sale-tag">
+                {{ block.settings.swiper_tag }}
+              </div>
+              
+              <div class="swiper-image-container">
+                {% if block.settings.swiper_image != blank %}
+                  <img
+                    src="{{ block.settings.swiper_image | image_url: width: 400 }}"
+                    alt="{{ block.settings.swiper_title }}"
+                    class="swiper-image"
+                    loading="lazy"
+                    width="200"
+                    height="180"
+                  >
+                {% else %}
+                  <div class="placeholder-image" style="width: 100%; height: 180px; background-color: #333; display: flex; align-items: center; justify-content: center;">
+                    {{ block.settings.swiper_title | truncate: 2, '' }}
+                  </div>
+                {% endif %}
+              </div>
+
+              <div>
+              <a href="{{ block.settings.link }}" class="product-name">{{ block.settings.swiper_title }}</a>
+              </div>
+              
+              <div class="rating">
+                <div class="rating-stars">{{ block.settings.swiper_rating-stars }}</div>
+                <div class="rating-count">{{ block.settings.swiper_rating-count }}</div>
+              </div>
+              
+              <div class="prices">
+                <div class="current-price">{{ block.settings.swiper_current-price }}</div>
+                <div class="original-price">{{ block.settings.swiper_original-price}}</div>
+              </div>
+              
+              <button class="add-to-cart">Add To Cart</button>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+    
+    <!-- 分页器移动到swiper容器之外 -->
+    {% if section.settings.show_pagination %}
+      <div class="swiper-pagination"></div>
+    {% endif %}
+    
+    <!-- 导航按钮保持不变 -->
+    {% if section.settings.show_navigation %}
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 确保Swiper库已加载
+    if (typeof Swiper === 'undefined') {
+      console.error('Swiper库未正确加载');
+      return;
+    }
+    
+    // 初始化Swiper
+    var swiper = new Swiper('.swiper', {
+      slidesPerView: 4,
+      spaceBetween: 20,
+      loop: true,
+      autoplay: {
+        delay: {{ section.settings.autoplay_speed | times: 1000 }},
+        disableOnInteraction: false,
+      },
+      
+      {% if section.settings.show_pagination %}
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+          dynamicBullets: false,
+        },
+      {% endif %}
+      
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      
+      breakpoints: {
+        320: {
+          slidesPerView: 1,
+          spaceBetween: 10
+        },
+        480: {
+          slidesPerView: 2,
+          spaceBetween: 15
+        },
+        768: {
+          slidesPerView: 3,
+          spaceBetween: 20
+        },
+        1024: {
+          slidesPerView: 4,
+          spaceBetween: 20
+        }
+      },
+      
+      on: {
+        init: function() {
+          console.log('Swiper初始化成功!');
+        }
+      }
+    });
+  });
+</script>
+
+
+{% schema %}
+{
+  "name": "🔄 Swiper Slider", // 添加图标更直观
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "轮播标题",
+      "default": "精选推荐"
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "自动轮播速度(秒)",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pagination",
+      "label": "显示分页指示器",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "显示导航箭头",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide", // 更符合轮播图语义
+      "name": "轮播幻灯片",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "swiper_image",
+          "label": "幻灯片图片",
+          "info": "建议尺寸：1200x600px"
+        },
+        {
+          "type": "text",
+          "id": "swiper_tag",
+          "label": "幻灯片标签",
+          "default": "Best Price Ever: 28% Off"
+        },
+        {
+          "type": "text",
+          "id": "swiper_title",
+          "label": "幻灯片标题",
+          "default": "新品上市"
+        },
+        {
+          "type": "text",
+          "id": "swiper_rating-stars",
+          "label": "产品星级",
+          "default": "★★★★★"
+        },
+        {
+          "type": "text",
+          "id": "swiper_rating-count",
+          "label": "数量统计",
+          "default": "(100)"
+        },
+        {
+          "type": "text",
+          "id": "swiper_current-price",
+          "label": "产品现价",
+          "default": "$26.39 USD"
+        },
+        {
+          "type": "text",
+          "id": "swiper_original-price",
+          "label": "产品原价",
+          "default": "$49.99 USD"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "链接地址",
+          "info": "点击幻灯片跳转链接"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "🔄 轮播图",
+      "category": "媒体"
+    }
+  ]
+}
+{% endschema %} 
