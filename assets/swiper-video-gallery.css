@@ -1,0 +1,272 @@
+/* 基础样式 */
+  :root {
+    --primary-bg: #000;
+    --text-white: #fff;
+    --text-gray: #bbb;
+    --accent-color: #ff6b00;
+    --transition: all 0.3s ease;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--primary-bg);
+    color: var(--text-white);
+  }
+
+  /* 视频轮播部分 */
+  .video-section {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 60px 20px;
+  }
+
+  .video-header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .video-title {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+  }
+
+  .video-section .swiper-container {
+    position: relative;
+    overflow: hidden;
+    padding: 0 40px;
+  }
+
+  /* 使用特定类名 */
+  .video-section .video-swiper {
+    width: 100%;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    overflow: hidden;
+    list-style: none;
+    padding: 0;
+    z-index: 1;
+    display: block;
+  }
+
+  /* 轮播图卡片样式 */
+  .video-section .swiper-slide {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transform: scale(1);
+    transition: var(--transition);
+    height: 280px;
+  }
+
+  .video-section .swiper-slide:hover {
+    transform: scale(1.03);
+    box-shadow: 0 15px 40px rgba(255, 107, 0, 0.3);
+  }
+
+  .video-section .video-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+
+  .video-section .swiper-slide:hover .video-image {
+    transform: scale(1.1);
+  }
+
+  .video-section .play-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: var(--transition);
+  }
+
+  .video-section .swiper-slide:hover .play-overlay {
+    opacity: 1;
+  }
+
+  .video-section .play-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .video-section .play-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--text-white);
+  }
+
+  /* 视频弹窗样式 */
+  .video-section .video-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition);
+  }
+
+  .video-modal.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal-content {
+    position: relative;
+    width: 90%;
+    max-width: 1100px;
+    background: var(--primary-bg);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  }
+
+  .close-modal {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    width: 45px;
+    height: 45px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: var(--transition);
+  }
+
+  .close-modal:hover {
+    background: var(--accent-color);
+    transform: rotate(90deg);
+  }
+
+  .video-section .close-modal svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--text-white);
+  }
+
+  #player-container {
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 宽高比 */
+    position: relative;
+  }
+
+  #video-player-target {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+  }
+
+  /* 播放器自定义样式 */
+  .vds-player {
+    --player-theme: var(--accent-color);
+    --player-focus-ring: 0 0 0 3px rgba(255, 107, 0, 0.5);
+    --player-tooltip-bg: #333;
+    --player-bg: #000;
+    --player-text: #fff;
+    --player-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --player-border-radius: 8px;
+  }
+
+  .placeholder-image {
+    width: 100%;
+    height: 100%;
+    background-color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 响应式设计 */
+  @media (min-width: 1600px) {
+    .swiper-slide {
+      height: 320px;
+    }
+  }
+
+  @media (max-width: 1280px) {
+    .video-title {
+      font-size: 36px;
+    }
+
+    .swiper-slide {
+      height: 240px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .video-title {
+      font-size: 32px;
+    }
+
+    .swiper-slide {
+      height: 220px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .video-header {
+      margin-bottom: 30px;
+    }
+
+    .video-title {
+      font-size: 28px;
+    }
+
+    .swiper-container {
+      padding: 0 20px;
+    }
+
+    .swiper-slide {
+      height: 200px;
+    }
+
+    .play-icon {
+      width: 50px;
+      height: 50px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .video-section {
+      padding: 40px 15px;
+    }
+
+    .swiper-slide {
+      height: 180px;
+    }
+  }

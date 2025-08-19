@@ -1,0 +1,221 @@
+{{ 'swiper-bundle.css' | asset_url | stylesheet_tag }}
+{{ 'swiper-video-gallery.css' | asset_url | stylesheet_tag }}
+<link rel="stylesheet" href="https://cdn.vidstack.io/player.css">
+<script src="{{ 'swiper-bundle.js' | asset_url }}" defer></script>
+
+
+<div class="video-section">
+  <div class="video-header">
+    <h1 class="video-title">Featured In Media</h1>
+  </div>
+
+  <div class="swiper-container">
+    <!-- 使用特定类名 -->
+    <div class="video-swiper">
+      <div class="swiper-wrapper">
+        {% for block in section.blocks %}
+          {% if block.type == 'video' %}
+            <div
+              class="swiper-slide"
+              data-video-id="{{ block.settings.video_id }}"
+              data-video-title="{{ block.settings.video_title }}"
+            >
+              {% if block.settings.thumbnail %}
+                <img
+                  src="{{ block.settings.thumbnail | image_url: width: 600 }}"
+                  class="video-image"
+                  loading="lazy"
+                  width="600"
+                  height="400"
+                >
+              {% else %}
+                <div
+                  class="placeholder-image"
+                >
+                  <span>视频封面</span>
+                </div>
+              {% endif %}
+              <div class="play-overlay">
+                <div class="play-icon">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M8,5.14V19.14L19,12.14L8,5.14Z"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- 视频弹窗容器 -->
+  <div class="video-modal">
+    <div class="modal-content">
+      <div class="close-modal">
+        <svg viewBox="0 0 24 24">
+          <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"></path>
+        </svg>
+      </div>
+      <div id="player-container">
+        <div id="video-player-target"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { VidstackPlayer } from 'https://cdn.vidstack.io/player.core';
+
+  document.addEventListener('DOMContentLoaded', async function() {
+    // 确保Swiper库已加载
+    if (typeof Swiper === 'undefined') {
+      console.error('Swiper库未正确加载');
+      return;
+    }
+
+    // 初始化Swiper
+    var swiper = new Swiper('.video-swiper', {
+      slidesPerView: 6,
+      spaceBetween: 20,
+      loop: true,
+      autoplay: {
+        delay: {{ section.settings.autoplay_speed | times: 1000 }},
+        disableOnInteraction: false,
+      },
+      pagination: false,
+      navigation: false,
+      // 响应式断点设置
+      breakpoints: {
+        320: {
+          slidesPerView: 2,
+          spaceBetween: 15
+        },
+        480: {
+          slidesPerView: 3,
+          spaceBetween: 15
+        },
+        640: {
+          slidesPerView: 4,
+          spaceBetween: 15
+        },
+        900: {
+          slidesPerView: 5,
+          spaceBetween: 20
+        },
+        1200: {
+          slidesPerView: 6,
+          spaceBetween: 20
+        }
+      },
+      on: {
+        init: function() {
+          console.log('Swiper初始化成功!');
+        }
+      }
+    });
+
+    // 获取视频弹窗元素
+    const videoModal = document.querySelector('.video-modal');
+    const closeModal = document.querySelector('.close-modal');
+    const videoSlides = document.querySelectorAll('.swiper-slide');
+    
+    let player = null;
+
+    // 点击视频封面打开弹窗
+    videoSlides.forEach(slide => {
+      slide.addEventListener('click', async function() {
+        const videoId = this.getAttribute('data-video-id');
+        const videoTitle = this.getAttribute('data-video-title');
+        
+        if (!videoId) return;
+        
+        // 显示弹窗
+        videoModal.classList.add('active');
+        
+        // 如果已经有播放器实例，先销毁
+        if (player) {
+          await player.destroy();
+          player = null;
+        }
+        
+        // 创建新的播放器实例
+        player = await VidstackPlayer.create({
+          target: '#video-player-target',
+          title: videoTitle,
+          src: `youtube/${videoId}`,
+          poster: this.querySelector('.video-image')?.src || '',
+          controls: true, // 启用控制界面
+          settings: ['quality', 'speed', 'captions'], // 设置菜单选项
+           autoplay: true,
+           clickToPlay: true,
+        });
+      });
+    });
+
+    // 点击关闭按钮关闭弹窗
+    closeModal.addEventListener('click', async function() {
+      videoModal.classList.remove('active');
+      
+      // 销毁播放器实例
+      if (player) {
+        await player.destroy();
+        player = null;
+      }
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "YouTube Video Gallery",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "轮播标题",
+      "default": "Featured In Media"
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "自动轮播速度(秒)",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    }
+  ],
+  "blocks": [
+    {
+      "type": "video",
+      "name": "Video",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "thumbnail",
+          "label": "视频封面"
+        },
+        {
+          "type": "text",
+          "id": "video_id",
+          "label": "YouTube视频ID",
+          "info": "例如: _cMxraX_5RE (来自YouTube视频URL)"
+        },
+        {
+          "type": "text",
+          "id": "video_title",
+          "label": "视频标题",
+          "default": "Featured Video"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "YouTube Video Gallery",
+      "category": "媒体"
+    }
+  ]
+}
+{% endschema %}

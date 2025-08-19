@@ -1,144 +1,5 @@
- {% comment %} <style>
-  .swiper {
-    width: 1000px;
-    height: 500px;
-  }
-</style>
 {{ 'swiper-bundle.css' | asset_url | stylesheet_tag }}
-<script src="{{ 'swiper-bundle.js' | asset_url }}" defer></script>  
-<div class="swiper">
-  <div class="swiper-wrapper">
-      {% for block in section.blocks %}
-        {% if block.type == 'slide' %}
-          <div class="swiper-slide">
-            <div class="swiper-category-icon">
-              {% if block.settings.swiper_image != blank %}
-                <img
-                  src="{{ block.settings.swiper_image | image_url: width:80,height:80, crop: 'center' }}"
-                  alt="{{ block.settings.swiper_title }}"
-                  class="swiper-category-image"
-                  width="80"
-                  height="80"
-                >
-              {% else %}
-                {{ block.settings.swiper_title | truncate: 2, '' }}
-              {% endif %}
-            </div>
-            <a href="{{ block.settings.link }}" class="category-name">
-              {{ block.settings.swiper_title }}
-            </a>
-            <div class="swiper-grid-description">
-              {{ block.settings.description }}
-            </div>
-          </div>
-        {% endif %}
-      {% endfor %}
-  </div>
-  <div class="swiper-pagination"></div>
-  <div class="swiper-button-prev"></div>
-  <div class="swiper-button-next"></div>
-  <div class="swiper-scrollbar"></div>
-</div>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var mySwiper = new Swiper('.swiper', {
-      slidesPerView: 4,
-      loop: true,
-      autoplay: {
-        delay: 3000,
-        disableOnInteraction: false,
-      },
-      pagination: {
-        el: '.swiper-pagination',
-      },
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-      scrollbar: {
-        el: '.swiper-scrollbar',
-      },
-    });
-  });
-</script>
-
-{% schema %}
-{
-  "name": "🔄 Swiper Slider", // 添加图标更直观
-  "max_blocks": 10,
-  "settings": [
-    {
-      "type": "text",
-      "id": "section_title",
-      "label": "轮播标题",
-      "default": "精选推荐"
-    },
-    {
-      "type": "range",
-      "id": "autoplay_speed",
-      "label": "自动轮播速度(秒)",
-      "min": 1,
-      "max": 10,
-      "step": 1,
-      "default": 3
-    },
-    {
-      "type": "checkbox",
-      "id": "show_pagination",
-      "label": "显示分页指示器",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_navigation",
-      "label": "显示导航箭头",
-      "default": true
-    }
-  ],
-  "blocks": [
-    {
-      "type": "slide", // 更符合轮播图语义
-      "name": "轮播幻灯片",
-      "settings": [
-        {
-          "type": "image_picker",
-          "id": "swiper_image",
-          "label": "幻灯片图片",
-          "info": "建议尺寸：1200x600px"
-        },
-        {
-          "type": "text",
-          "id": "swiper_title",
-          "label": "幻灯片标题",
-          "default": "新品上市"
-        },
-        {
-          "type": "richtext",
-          "id": "description",
-          "label": "描述文字",
-          "default": "<p>点击了解更多详情</p>"
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "链接地址",
-          "info": "点击幻灯片跳转链接"
-        }
-      ]
-    }
-  ],
-  "presets": [
-    {
-      "name": "🔄 默认轮播配置",
-      "category": "媒体"
-    }
-  ]
-}
-{% endschema %}  {% endcomment %}
-
-
-{{ 'swiper-bundle.css' | asset_url | stylesheet_tag }}
+{{ 'swiper-bundle-slider.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'swiper-bundle.js' | asset_url }}" defer></script>  
 
 <div class="swiper-section">
@@ -147,7 +8,7 @@
   </div>
 
   <div class="swiper-container">
-    <div class="swiper">
+    <div class="product-swiper">
       <div class="swiper-wrapper">
         {% for block in section.blocks %}
           {% if block.type == 'slide' %}
@@ -216,7 +77,7 @@
     }
     
     // 初始化Swiper
-    var swiper = new Swiper('.swiper', {
+    var swiper = new Swiper('.product-swiper', {
       slidesPerView: 4,
       spaceBetween: 20,
       loop: true,
