@@ -185,6 +185,8 @@
       "label": "Media gallery"
     },
     "facets": {
+      "close_filter": "Close filter",
+      "filter": "Filter",
       "filter_and_operator_subtitle": "Match all",
       "apply": "Apply",
       "clear": "Clear",

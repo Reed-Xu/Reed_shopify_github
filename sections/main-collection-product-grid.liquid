@@ -34,6 +34,214 @@
       padding-bottom: {{ section.settings.padding_bottom }}px;
     }
   }
+  
+  .facets-vertical-form .facet-filters-button{
+    display: flex;
+    justify-content: flex-start;
+    margin-left: 0px;
+  }
+
+  /* 筛选按钮样式 */
+  .toggle-filters-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1;
+  }
+  
+  .toggle-filters-button:hover {
+    background-color: #e8e8e8;
+  }
+  
+  .toggle-filters-text {
+    margin-right: 8px;
+    font-weight: 500;
+  }
+  
+  .toggle-filters-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  /* 桌面端筛选栏隐藏样式 */
+  .facets-wrapper.hidden {
+    display: none;
+  }
+  
+  /* 移动端抽屉式筛选样式 */
+  @media screen and (max-width: 749px) {
+    /* 遮罩层样式 */
+    .facets-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    
+    .facets-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    /* 抽屉式筛选栏样式 */
+    .facets-wrapper.facets-drawer {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 85%;
+      max-width: 400px;
+      height: 100%;
+      background-color: #ffffff;
+      z-index: 1000;
+      overflow-y: auto;
+      transition: right 0.3s ease-in-out;
+      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .facets-wrapper.facets-drawer.facets-drawer-open {
+      right: 0;
+    }
+    
+    /* 抽屉头部样式 */
+    .facets-drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid #e0e0e0;
+      background-color: #f8f9fa;
+    }
+    
+    .facets-drawer-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .facets-drawer-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+    }
+    
+    /* 筛选内容样式优化 */
+    .facets-drawer .facets__summary {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 16px;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .facets-drawer .facets__summary::after {
+      content: '→';
+      font-size: 14px;
+      transition: transform 0.2s ease;
+    }
+    
+    .facets-drawer .facets__summary[aria-expanded="true"]::after {
+      transform: rotate(90deg);
+    }
+    
+    .facets-drawer .facets__display {
+      padding: 12px 20px;
+    }
+    
+    .facets-drawer .facets__item {
+      margin-bottom: 8px;
+    }
+    
+    .facets-drawer .facets__label {
+      font-size: 14px;
+      padding: 8px 0;
+    }
+    
+    /* 底部操作按钮 */
+    .facets-drawer-footer {
+      position: sticky;
+      bottom: 0;
+      background-color: #ffffff;
+      padding: 16px 20px;
+      border-top: 1px solid #e0e0e0;
+      display: flex;
+      gap: 12px;
+    }
+    
+    .facets-drawer-clear,
+    .facets-drawer-apply {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid #d0d0d0;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .facets-drawer-clear {
+      background-color: #ffffff;
+      color: #333333;
+    }
+    
+    .facets-drawer-clear:hover {
+      background-color: #f8f9fa;
+    }
+    
+    .facets-drawer-apply {
+      background-color: #007bff;
+      color: #ffffff;
+      border-color: #007bff;
+    }
+    
+    .facets-drawer-apply:hover {
+      background-color: #0056b3;
+    }
+    
+    /* 防止页面滚动 */
+    body.overflow-hidden {
+      overflow: hidden;
+    }
+  }
+  
+  /* 响应式调整 */
+  @media screen and (min-width: 750px) {
+    .product-grid-container:not(.filters-hidden) {
+      margin-left: 10%;
+      width: 80%;
+    }
+    
+    .facets-wrapper {
+      width: 20%;
+    }
+    
+    .facet-filters-button {
+      margin-left: -50px;
+    }
+  }
+  
+  @media screen and (max-width: 749px) {
+    .facet-filters-button {
+      margin-left: -30px;
+    }
+  }
 {%- endstyle -%}
 
 <div class="section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}">
@@ -42,6 +250,14 @@
     {%- if section.settings.enable_sorting and section.settings.filter_type == 'vertical' -%}
       <facet-filters-form class="facets facets-vertical-sort page-width small-hide">
         <form class="facets-vertical-form" id="FacetSortForm">
+          <div class="facet-filters-button">
+            <button id="toggle-filters-btn" class="toggle-filters-button" type="button" aria-label="{{ 'products.facets.filter_button' | t }}" aria-expanded="true">
+              <span class="toggle-filters-text">{{ 'products.facets.filter' | t }}</span>
+              <span class="toggle-filters-icon">
+                {{- 'icon-filter.svg' | inline_asset_content -}}
+              </span>
+            </button>
+          </div>
           <div class="facet-filters sorting caption">
             <div class="facet-filters__field">
               <h2 class="facet-filters__label caption-large text-body">
@@ -100,6 +316,137 @@
     <div class="{% if section.settings.filter_type == 'vertical' %} facets-vertical page-width{% endif %}">
       {{ 'component-facets.css' | asset_url | stylesheet_tag }}
       <script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          // 获取筛选按钮和筛选栏元素
+          const toggleFiltersBtn = document.getElementById('toggle-filters-btn');
+          const facetsWrapper = document.getElementById('main-collection-filters');
+          
+          if (toggleFiltersBtn && facetsWrapper) {
+            // 创建遮罩层
+            let overlay = document.querySelector('.facets-overlay');
+            if (!overlay) {
+              overlay = document.createElement('div');
+              overlay.className = 'facets-overlay';
+              document.body.appendChild(overlay);
+            }
+            
+            // 筛选按钮点击事件
+            toggleFiltersBtn.addEventListener('click', function(event) {
+              event.preventDefault();
+              
+              // 检查是否为移动端
+              if (window.innerWidth <= 749) {
+                // 移动端：抽屉式功能
+                facetsWrapper.classList.add('facets-drawer');
+                
+                // 切换抽屉开关状态
+                const isOpen = facetsWrapper.classList.contains('facets-drawer-open');
+                
+                if (!isOpen) {
+                  // 打开抽屉
+                  facetsWrapper.classList.add('facets-drawer-open');
+                  overlay.classList.add('active');
+                  document.body.classList.add('overflow-hidden');
+                  toggleFiltersBtn.setAttribute('aria-expanded', 'true');
+                  
+                  // 添加抽屉头部（如果不存在）
+                  addDrawerHeader();
+                  // 添加底部操作按钮（如果不存在）
+                  addDrawerFooter();
+                } else {
+                  // 关闭抽屉
+                  closeDrawer();
+                }
+              } else {
+                // 桌面端：原有的显示/隐藏功能
+                facetsWrapper.classList.toggle('hidden');
+                
+                // 更新按钮的aria-expanded属性
+                const isExpanded = facetsWrapper.classList.contains('hidden') ? 'false' : 'true';
+                toggleFiltersBtn.setAttribute('aria-expanded', isExpanded);
+              }
+              
+              event.stopPropagation();
+            });
+            
+            // 遮罩层点击关闭
+            overlay.addEventListener('click', closeDrawer);
+            
+            // 关闭抽屉函数
+            function closeDrawer() {
+              facetsWrapper.classList.remove('facets-drawer-open');
+              overlay.classList.remove('active');
+              document.body.classList.remove('overflow-hidden');
+              toggleFiltersBtn.setAttribute('aria-expanded', 'false');
+            }
+            
+            // 添加抽屉头部
+            function addDrawerHeader() {
+              if (!facetsWrapper.querySelector('.facets-drawer-header')) {
+                const header = document.createElement('div');
+                header.className = 'facets-drawer-header';
+                header.innerHTML = `
+                  <h3 class="facets-drawer-title">筛选和排序</h3>
+                  <button class="facets-drawer-close" type="button" aria-label="关闭筛选">
+                    ×
+                  </button>
+                `;
+                
+                facetsWrapper.insertBefore(header, facetsWrapper.firstChild);
+                
+                // 关闭按钮事件
+                header.querySelector('.facets-drawer-close').addEventListener('click', closeDrawer);
+              }
+            }
+            
+            // 添加底部操作按钮
+            function addDrawerFooter() {
+              if (!facetsWrapper.querySelector('.facets-drawer-footer')) {
+                const footer = document.createElement('div');
+                footer.className = 'facets-drawer-footer';
+                footer.innerHTML = `
+                  <button class="facets-drawer-clear" type="button">清除全部</button>
+                  <button class="facets-drawer-apply" type="button">应用筛选</button>
+                `;
+                
+                facetsWrapper.appendChild(footer);
+                
+                // 按钮事件
+                footer.querySelector('.facets-drawer-clear').addEventListener('click', function() {
+                  // 清除所有筛选条件的逻辑
+                  const form = facetsWrapper.querySelector('form');
+                  if (form) {
+                    const checkboxes = form.querySelectorAll('input[type="checkbox"]:checked');
+                    checkboxes.forEach(checkbox => checkbox.checked = false);
+                    form.submit();
+                  }
+                });
+                
+                footer.querySelector('.facets-drawer-apply').addEventListener('click', closeDrawer);
+              }
+            }
+            
+            // 窗口大小变化时的处理
+            window.addEventListener('resize', function() {
+              if (window.innerWidth > 749) {
+                // 桌面端时关闭抽屉并移除抽屉样式
+                closeDrawer();
+                facetsWrapper.classList.remove('facets-drawer', 'facets-drawer-open');
+                // 确保桌面端筛选栏正常显示
+                if (facetsWrapper.classList.contains('hidden')) {
+                  toggleFiltersBtn.setAttribute('aria-expanded', 'false');
+                } else {
+                  toggleFiltersBtn.setAttribute('aria-expanded', 'true');
+                }
+              } else {
+                // 移动端时移除桌面端的hidden类
+                facetsWrapper.classList.remove('hidden');
+              }
+            });
+          }
+        });
+      </script>
       {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
         <aside
           aria-labelledby="verticalTitle"
