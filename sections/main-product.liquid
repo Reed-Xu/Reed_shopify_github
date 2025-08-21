@@ -197,6 +197,11 @@
                     {{ product.description }}
                   </div>
                 {%- endif -%}
+              {%- when 'metafield-1' -%}
+                <div>
+                  {{ product.metafields.custom.describe | metafield_tag }}
+                </div>
+                
               {%- when 'sku' -%}
                 <p
                   class="product__sku{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.sku.size == 0 %} visibility-hidden{% endif %}"
@@ -746,6 +751,16 @@
   "blocks": [
     {
       "type": "@app"
+    },
+    {
+      "type": "metafield-1",
+      "name": "产品详情",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "此区域将显示产品后台设置的 information.rich_description 自定义字段内容。请在产品编辑页面的 Metafields 中配置相关内容。"
+        }
+      ]
     },
     {
       "type": "text",
