@@ -1,0 +1,97 @@
+{%- comment -%}
+Swiper产品卡片组件
+参数：
+- product_card_product: 产品对象（必需）
+- custom_tag: 自定义标签
+- custom_image: 自定义图片
+- custom_title: 自定义标题
+- custom_link: 自定义链接
+- custom_rating_stars: 自定义评分星级
+- custom_rating_count: 自定义评分数量
+- custom_current_price: 自定义当前价格
+- custom_original_price: 自定义原价
+{%- endcomment -%}
+
+{%- comment -%}
+标签：优先使用自定义标签
+{%- endcomment -%}
+{%- if custom_tag != blank -%}
+  <div class="sale-tag">
+    {{ custom_tag }}
+  </div>
+{%- endif -%}
+
+<div class="swiper-image-container">
+  {%- comment -%}
+  图片：优先使用自定义图片，否则使用产品主图
+  {%- endcomment -%}
+  {%- assign display_image = product_card_product.featured_image -%}
+  {%- if custom_image != blank -%}
+    {%- assign display_image = custom_image -%}
+  {%- endif -%}
+  
+  {%- if display_image != blank -%}
+    <img
+      src="{{ display_image | image_url: width: 400 }}"
+      alt="{{ product_card_product.title }}"
+      class="swiper-image"
+      loading="lazy"
+      width="200"
+      height="180"
+    >
+  {%- else -%}
+    <div class="placeholder-image" style="width: 100%; height: 180px; background-color: #333; display: flex; align-items: center; justify-content: center; color: white;">
+      {{ product_card_product.title | truncate: 2, '' }}
+    </div>
+  {%- endif -%}
+</div>
+
+<div>
+  {%- comment -%}
+  标题：优先使用自定义标题，否则使用产品名称
+  {%- endcomment -%}
+  {%- assign display_title = product_card_product.title -%}
+  {%- if custom_title != blank -%}
+    {%- assign display_title = custom_title -%}
+  {%- endif -%}
+  
+  {%- assign product_url = product_card_product.url -%}
+  {%- if custom_link != blank -%}
+    {%- assign product_url = custom_link -%}
+  {%- endif -%}
+  
+  <a href="{{ product_url }}" class="product-name">{{ display_title }}</a>
+</div>
+
+{%- comment -%}
+评分：只有自定义了才显示
+{%- endcomment -%}
+{%- if custom_rating_stars != blank or custom_rating_count != blank -%}
+  <div class="rating">
+    {%- if custom_rating_stars != blank -%}
+      <div class="rating-stars">{{ custom_rating_stars }}</div>
+    {%- endif -%}
+    {%- if custom_rating_count != blank -%}
+      <div class="rating-count">{{ custom_rating_count }}</div>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+<div class="prices">
+  {%- comment -%}
+  价格：优先使用自定义价格，否则使用产品价格
+  {%- endcomment -%}
+  {%- if custom_current_price != blank -%}
+    <div class="current-price">{{ custom_current_price }}</div>
+  {%- else -%}
+    <div class="current-price">{{ product_card_product.price | money }}</div>
+  {%- endif -%}
+  
+  {%- if custom_original_price != blank -%}
+    <div class="original-price">{{ custom_original_price }}</div>
+  {%- elsif product_card_product.compare_at_price > product_card_product.price -%}
+    <div class="original-price">{{ product_card_product.compare_at_price | money }}</div>
+  {%- endif -%}
+</div>
+
+<button class="add-to-cart" onclick="addToCart('{{ product_card_product.variants.first.id }}', 1)">Add To Cart</button>

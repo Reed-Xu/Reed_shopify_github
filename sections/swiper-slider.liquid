@@ -4,54 +4,134 @@
 
 <div class="swiper-section">
   <div class="swiper-header">
-    <h1 class="swiper-title">Top Picks For You</h1>
+    <h1 class="swiper-title">{{ section.settings.section_title | default: 'Top Picks For You' }}</h1>
   </div>
 
   <div class="swiper-container">
     <div class="product-swiper">
       <div class="swiper-wrapper">
-        {% for block in section.blocks %}
-          {% if block.type == 'slide' %}
-            <div class="swiper-slide">
-              <div class="sale-tag">
-                {{ block.settings.swiper_tag }}
+        {%- comment -%}
+        核心渲染逻辑（参考product-carousel.liquid）：
+        1. 如果配置了产品系列，优先显示产品系列中的产品
+        2. 如果没有产品系列，显示block中选择的产品
+        3. 支持自定义内容覆盖产品默认信息
+        {%- endcomment -%}
+        
+        {%- liquid
+          assign products_to_show = blank
+          assign show_collection = false
+          
+          comment
+          判断显示逻辑：优先产品系列，其次block产品
+          endcomment
+          if section.settings.featured_collection != blank
+            assign products_to_show = collections[section.settings.featured_collection].products
+            assign show_collection = true
+          elsif section.blocks.size > 0
+            assign products_to_show = section.blocks
+            assign show_collection = false
+          endif
+        -%}
+        
+        {%- if products_to_show != blank -%}
+          {%- if show_collection -%}
+            {%- comment -%}
+            渲染产品系列中的产品
+            {%- endcomment -%}
+            {%- for product in products_to_show limit: section.settings.products_to_show -%}
+              <div class="swiper-slide">
+                {%- render 'swiper-product-card', product_card_product: product -%}
               </div>
-              
-              <div class="swiper-image-container">
-                {% if block.settings.swiper_image != blank %}
-                  <img
-                    src="{{ block.settings.swiper_image | image_url: width: 400 }}"
-                    alt="{{ block.settings.swiper_title }}"
-                    class="swiper-image"
-                    loading="lazy"
-                    width="200"
-                    height="180"
-                  >
-                {% else %}
-                  <div class="placeholder-image" style="width: 100%; height: 180px; background-color: #333; display: flex; align-items: center; justify-content: center;">
-                    {{ block.settings.swiper_title | truncate: 2, '' }}
+            {%- endfor -%}
+          {%- else -%}
+            {%- comment -%}
+            渲染block中选择的产品
+            {%- endcomment -%}
+            {%- for block in products_to_show -%}
+              {%- if block.settings.featured_product != blank -%}
+                <div class="swiper-slide" {{ block.shopify_attributes }}>
+                  {%- render 'swiper-product-card', 
+                      product_card_product: block.settings.featured_product,
+                      custom_tag: block.settings.swiper_tag,
+                      custom_image: block.settings.swiper_image,
+                      custom_title: block.settings.swiper_title,
+                      custom_link: block.settings.link,
+                      custom_rating_stars: block.settings.swiper_rating-stars,
+                      custom_rating_count: block.settings.swiper_rating-count,
+                      custom_current_price: block.settings.swiper_current-price,
+                      custom_original_price: block.settings.swiper_original-price
+                  -%}
+                </div>
+              {%- elsif block.type == 'slide' -%}
+                {%- comment -%}
+                渲染纯自定义内容的block
+                {%- endcomment -%}
+                <div class="swiper-slide" {{ block.shopify_attributes }}>
+                  {%- if block.settings.swiper_tag != blank -%}
+                    <div class="sale-tag">
+                      {{ block.settings.swiper_tag }}
+                    </div>
+                  {%- endif -%}
+                  
+                  <div class="swiper-image-container">
+                    {%- if block.settings.swiper_image != blank -%}
+                      <img
+                        src="{{ block.settings.swiper_image | image_url: width: 400 }}"
+                        alt="{{ block.settings.swiper_title | default: 'Product Image' }}"
+                        class="swiper-image"
+                        loading="lazy"
+                        width="200"
+                        height="180"
+                      >
+                    {%- else -%}
+                      <div class="placeholder-image" style="width: 100%; height: 180px; background-color: #333; display: flex; align-items: center; justify-content: center; color: white;">
+                        No Image
+                      </div>
+                    {%- endif -%}
                   </div>
-                {% endif %}
-              </div>
 
-              <div>
-              <a href="{{ block.settings.link }}" class="product-name">{{ block.settings.swiper_title }}</a>
-              </div>
-              
-              <div class="rating">
-                <div class="rating-stars">{{ block.settings.swiper_rating-stars }}</div>
-                <div class="rating-count">{{ block.settings.swiper_rating-count }}</div>
-              </div>
-              
-              <div class="prices">
-                <div class="current-price">{{ block.settings.swiper_current-price }}</div>
-                <div class="original-price">{{ block.settings.swiper_original-price}}</div>
-              </div>
-              
-              <button class="add-to-cart">Add To Cart</button>
+                  <div>
+                    {%- if block.settings.swiper_title != blank -%}
+                      {%- if block.settings.link != blank -%}
+                        <a href="{{ block.settings.link }}" class="product-name">{{ block.settings.swiper_title }}</a>
+                      {%- else -%}
+                        <div class="product-name">{{ block.settings.swiper_title }}</div>
+                      {%- endif -%}
+                    {%- endif -%}
+                  </div>
+                  
+                  {%- if block.settings.swiper_rating-stars != blank or block.settings.swiper_rating-count != blank -%}
+                    <div class="rating">
+                      {%- if block.settings.swiper_rating-stars != blank -%}
+                        <div class="rating-stars">{{ block.settings.swiper_rating-stars }}</div>
+                      {%- endif -%}
+                      {%- if block.settings.swiper_rating-count != blank -%}
+                        <div class="rating-count">{{ block.settings.swiper_rating-count }}</div>
+                      {%- endif -%}
+                    </div>
+                  {%- endif -%}
+                  
+                  <div class="prices">
+                    {%- if block.settings.swiper_current-price != blank -%}
+                      <div class="current-price">{{ block.settings.swiper_current-price }}</div>
+                    {%- endif -%}
+                    {%- if block.settings.swiper_original-price != blank -%}
+                      <div class="original-price">{{ block.settings.swiper_original-price }}</div>
+                    {%- endif -%}
+                  </div>
+                  
+                  <button class="add-to-cart">Add To Cart</button>
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+        {%- else -%}
+          <div class="swiper-slide">
+            <div class="placeholder-content" style="text-align: center; padding: 40px; color: #666;">
+              <p>No products to display. Please configure a collection or add product blocks.</p>
             </div>
-          {% endif %}
-        {% endfor %}
+          </div>
+        {%- endif -%}
       </div>
     </div>
     
@@ -69,6 +149,30 @@
 </div>
 
 <script>
+  // 添加到购物车函数
+  function addToCart(variantId, quantity) {
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: variantId,
+        quantity: quantity
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      // 可以在这里添加成功提示
+      console.log('产品已添加到购物车:', data);
+      // 触发购物车更新事件
+      document.dispatchEvent(new CustomEvent('cart:updated'));
+    })
+    .catch(error => {
+      console.error('添加到购物车失败:', error);
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     // 确保Swiper库已加载
     if (typeof Swiper === 'undefined') {
@@ -76,61 +180,82 @@
       return;
     }
     
-    // 初始化Swiper
-    var swiper = new Swiper('.product-swiper', {
-      slidesPerView: 4,
-      spaceBetween: 20,
-      loop: true,
-      autoplay: {
-        delay: {{ section.settings.autoplay_speed | times: 1000 }},
-        disableOnInteraction: false,
-      },
+    // 延迟初始化，确保DOM完全渲染（特别是产品系列渲染）
+    setTimeout(function() {
+      // 获取幻灯片数量，用于判断是否启用loop
+      var slides = document.querySelectorAll('.product-swiper .swiper-slide');
+      var slideCount = slides.length;
       
-      {% if section.settings.show_pagination %}
-        pagination: {
-          el: '.swiper-pagination',
-          clickable: true,
-          dynamicBullets: false,
+      // 如果没有幻灯片，不初始化Swiper
+      if (slideCount === 0) {
+        console.log('没有幻灯片，跳过Swiper初始化');
+        return;
+      }
+      
+      // 初始化Swiper配置
+      var swiperConfig = {
+        slidesPerView: 4,
+        spaceBetween: 20,
+        // 只有当幻灯片数量大于显示数量时才启用loop
+        loop: slideCount > 4,
+        autoplay: {
+          delay: {{ section.settings.autoplay_speed | times: 1000 }},
+          disableOnInteraction: false,
         },
+        
+        breakpoints: {
+          320: {
+            slidesPerView: 1,
+            spaceBetween: 10
+          },
+          480: {
+            slidesPerView: 2,
+            spaceBetween: 15
+          },
+          768: {
+            slidesPerView: 3,
+            spaceBetween: 20
+          },
+          1024: {
+            slidesPerView: 4,
+            spaceBetween: 20
+          }
+        },
+        
+        on: {
+          init: function() {
+            console.log('Swiper初始化成功! 幻灯片数量:', slideCount, 'Loop模式:', slideCount > 4);
+          }
+        }
+      };
+      
+      // 添加分页器配置（如果启用）
+      {% if section.settings.show_pagination %}
+      swiperConfig.pagination = {
+        el: '.swiper-pagination',
+        clickable: true,
+        dynamicBullets: false,
+      };
       {% endif %}
       
-      navigation: {
+      // 添加导航按钮配置（如果启用）
+      {% if section.settings.show_navigation %}
+      swiperConfig.navigation = {
         nextEl: '.swiper-button-next',
         prevEl: '.swiper-button-prev',
-      },
+      };
+      {% endif %}
       
-      breakpoints: {
-        320: {
-          slidesPerView: 1,
-          spaceBetween: 10
-        },
-        480: {
-          slidesPerView: 2,
-          spaceBetween: 15
-        },
-        768: {
-          slidesPerView: 3,
-          spaceBetween: 20
-        },
-        1024: {
-          slidesPerView: 4,
-          spaceBetween: 20
-        }
-      },
-      
-      on: {
-        init: function() {
-          console.log('Swiper初始化成功!');
-        }
-      }
-    });
+      // 初始化Swiper
+      var swiper = new Swiper('.product-swiper', swiperConfig);
+    }, 100); // 延迟100ms确保DOM完全渲染
   });
 </script>
 
 
 {% schema %}
 {
-  "name": "🔄 Swiper Slider", // 添加图标更直观
+  "name": "🔄 Swiper Slider",
   "max_blocks": 10,
   "settings": [
     {
@@ -138,6 +263,22 @@
       "id": "section_title",
       "label": "轮播标题",
       "default": "精选推荐"
+    },
+    {
+      "type": "collection",
+      "id": "featured_collection",
+      "label": "选择产品系列",
+      "info": "选择一个产品系列，将自动显示该系列中的产品。如果同时配置了block，block配置将覆盖系列产品的默认信息。"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "显示产品数量",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "default": 8,
+      "info": "从选择的产品系列中显示的产品数量"
     },
     {
       "type": "range",
@@ -163,50 +304,66 @@
   ],
   "blocks": [
     {
-      "type": "slide", // 更符合轮播图语义
+      "type": "slide",
       "name": "轮播幻灯片",
       "settings": [
         {
+          "type": "product",
+          "id": "featured_product",
+          "label": "选择产品",
+          "info": "选择一个产品，将自动获取产品信息。下方的自定义配置可以覆盖产品的默认信息。"
+        },
+        {
+          "type": "header",
+          "content": "自定义配置（可选，将覆盖产品默认信息）"
+        },
+        {
           "type": "image_picker",
           "id": "swiper_image",
-          "label": "幻灯片图片",
-          "info": "建议尺寸：1200x600px"
+          "label": "自定义图片",
+          "info": "留空则使用产品主图，建议尺寸：400x400px"
         },
         {
           "type": "text",
           "id": "swiper_tag",
-          "label": "幻灯片标签",
-          "default": "Best Price Ever: 28% Off"
+          "label": "自定义标签",
+          "info": "留空则不显示标签",
+          "placeholder": "例如：限时优惠"
         },
         {
           "type": "text",
           "id": "swiper_title",
-          "label": "幻灯片标题",
-          "default": "新品上市"
+          "label": "自定义标题",
+          "info": "留空则使用产品名称",
+          "placeholder": "自定义产品标题"
         },
         {
           "type": "text",
           "id": "swiper_rating-stars",
-          "label": "产品星级",
-          "default": "★★★★★"
+          "label": "自定义星级",
+          "info": "留空则不显示星级",
+          "placeholder": "★★★★★"
         },
         {
           "type": "text",
           "id": "swiper_rating-count",
-          "label": "数量统计",
-          "default": "(100)"
+          "label": "自定义评价数量",
+          "info": "留空则不显示评价数量",
+          "placeholder": "(100)"
         },
         {
           "type": "text",
           "id": "swiper_current-price",
-          "label": "产品现价",
-          "default": "$26.39 USD"
+          "label": "自定义现价",
+          "info": "留空则使用产品价格",
+          "placeholder": "$26.39"
         },
         {
           "type": "text",
           "id": "swiper_original-price",
-          "label": "产品原价",
-          "default": "$49.99 USD"
+          "label": "自定义原价",
+          "info": "留空则使用产品对比价格",
+          "placeholder": "$49.99"
         },
         {
           "type": "url",
@@ -224,4 +381,4 @@
     }
   ]
 }
-{% endschema %} 
+{% endschema %}
